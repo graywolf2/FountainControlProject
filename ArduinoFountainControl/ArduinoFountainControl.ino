@@ -1,8 +1,8 @@
-int sensorPin = A0; // input pin
-int sensorValue = 0; // variable to store the value coming from the sensor
+// int sensorPin = A0; // input pin
+// int sensorValue = 0; // variable to store the value coming from the sensor
 
-void(* resetFunc) (void) = 0; // declare reset function at address 0
-
+// void(* resetFunc) (void) = 0; // declare reset function at address 0
+/*
 // this function will return the number of bytes currently free in RAM
 // written by David A. Mellis
 // based on code by Rob Faludi http://www.faludi.com
@@ -13,10 +13,10 @@ int availableMemory() {
   free(buf);
   return size;
 }
-
-void blinkLed(int n) { // Функція blinkLed блимає світлодіодом n раз
+*/
+void blinkLed(int n) { // Функція blinkLed блимає світлодіодом n раз.1
     for (int i = 0; i < n; i++) {
-      if (i) delay(300); // на першому такті пауза не потрібна
+      if (i) delay(300); // На першому такті пауза не потрібна.
       digitalWrite(13, HIGH);
       delay(300);
       digitalWrite(13, LOW);
@@ -24,8 +24,8 @@ void blinkLed(int n) { // Функція blinkLed блимає світлоді�
 }
 
 void setup() {
-  Serial.begin(9600); // відкриваємо порт 
-  blinkLed(3); // 3 рази блимаємо світлодіодом - повідомляємо що програма запустилась
+  Serial.begin(9600); // Відкриваємо порт. 
+  blinkLed(1); // 1 раз блимаємо світлодіодом - повідомляємо що програма запустилась
 }
 
 void loop() {         
@@ -33,29 +33,44 @@ void loop() {
   char buffer[100];
   char c;
 
-  // якщо є дані, читаємо
+  // Якщо є дані, читаємо.
   if (Serial.available()) {
     delay(100);
 
-    // записуємо почитане в буфер
+    // Записуємо почитане в буфер.
     while (Serial.available() && i < 99) buffer[i++] = Serial.read();
 
-    buffer[i] = '\0'; // закриваємо масив
+    buffer[i] = '\0'; // Закриваємо масив.
   }
 
-  if (i) { // якщо буфер наповнено
+  if (i) { // Якщо буфер наповнено.
 
-    // видаляємо можливий символ \n в кінці
+    // Видаляємо можливий символ \n в кінці.
     if (buffer[i - 1] == '\n') {
-      if (i == 1) return; // пусту стрічку пропускаємо
+      if (i == 1) return; // Пусту стрічку пропускаємо.
       buffer[i - 1] = '\0';
     }
                 
-    // показуємо отриману команду
+    // Показуємо отриману команду.
     Serial.print("Received command: ");
     Serial.print(buffer);
     Serial.println();
     
+    if (!strcmp(buffer, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
+      // Даємо імпульс 300 мс на вихід 1.
+      digitalWrite(1, HIGH);
+      delay(300);
+      digitalWrite(1, LOW);
+      
+    // Якщо отримали команду "turn off fountain 1".
+    } else if (!strcmp(buffer, "turn off fountain 1")) {
+      // Даємо імпульс 300 мс на вихід 2.
+      digitalWrite(2, HIGH);
+      delay(300);
+      digitalWrite(2, LOW);
+    }
+
+    /*    
     c = buffer[0];
     if (c == 'b') { // якщо отримано команду b
       // якщо після b вказано пробіл то блимаємо світлодіодом визначеною кількостю раз.
@@ -99,7 +114,8 @@ void loop() {
       Serial.println("r : reset arduino");
       Serial.println("h : help");
 
-    } else Serial.println("Unknown command"); // Якщо команда невідома
+    } else Serial.println("Unknown command"); // Якщо команда невідома.
+    */
   } // if (i)
 }
 // Sergiy Vovk. 2017.

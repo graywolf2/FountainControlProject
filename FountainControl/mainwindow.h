@@ -1,6 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QFile>
 
@@ -18,6 +17,7 @@ public:
 
 private slots:
 	void on_turnOnFountain1_clicked();
+	void on_turnOffFountain1_clicked();
 
 private:
 	Ui::MainWindow *ui;
