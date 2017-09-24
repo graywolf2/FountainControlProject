@@ -22,6 +22,7 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	QFile arduino;
+	void sendCommandToArduino(const QByteArray& command, bool showAnswer = true);
 };
 
 #endif // MAINWINDOW_H

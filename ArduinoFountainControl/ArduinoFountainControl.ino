@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 // int sensorPin = A0; // Input pin.
 // int sensorValue = 0; // Variable to store the value coming from the sensor.
 
@@ -35,23 +36,22 @@ void notifyAboutCommand(const char* command) { // Повідомляє кори�
 inline void proccessCommand(const char* command) { // Обробляє команду.
   if (!strcmp(command, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
     notifyAboutCommand(command);
-
-    // Даємо імпульс 300 мс на вихід 1.
     digitalWrite(1, HIGH);
-    delay(300);
-    digitalWrite(1, LOW);
+    digitalWrite(ledPin, HIGH);
+    EEPROM.write(0, 1);
 
-    blinkLed(1);
     // Якщо отримали команду "turn off fountain 1".
   } else if (!strcmp(command, "turn off fountain 1")) {
     notifyAboutCommand(command);
-
-    // Даємо імпульс 300 мс на вихід 2.
-    digitalWrite(2, HIGH);
-    delay(300);
     digitalWrite(2, LOW);
+    digitalWrite(ledPin, LOW);
+    EEPROM.write(0, 0);
 
-    blinkLed(1);
+  } else if (!strcmp(command, "get state")) { // Якщо отримали команду "get state".
+    if (EEPROM.read(0)) Serial.print("fountain 1: on");
+    else Serial.print("fountain 1: off");
+    Serial.println();
+
   } else { // Якщо команда невідома.
     Serial.print("Unknown command: ");
     Serial.print(command);
@@ -67,7 +67,10 @@ void setup() {
   pinMode(2, OUTPUT);
   pinMode(ledPin, OUTPUT);
 
+  byte b = EEPROM.read(0);
+  if (b) digitalWrite(1, HIGH);
   blinkLed(2); // Блимаємо світлодіодом - повідомляємо що програма запустилась.
+  if (b) digitalWrite(ledPin, HIGH);
 }
 
 void loop() {
