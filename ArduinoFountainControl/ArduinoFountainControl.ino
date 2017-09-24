@@ -1,11 +1,11 @@
-// int sensorPin = A0; // input pin
-// int sensorValue = 0; // variable to store the value coming from the sensor
+// int sensorPin = A0; // Input pin.
+// int sensorValue = 0; // Variable to store the value coming from the sensor.
 
-// void(* resetFunc) (void) = 0; // declare reset function at address 0
+// void(* resetFunc) (void) = 0; // Declare reset function at address 0.
 /*
-// this function will return the number of bytes currently free in RAM
-// written by David A. Mellis
-// based on code by Rob Faludi http://www.faludi.com
+// This function will return the number of bytes currently free in RAM.
+// Written by David A. Mellis.
+// Based on code by Rob Faludi http://www.faludi.com.
 int availableMemory() {
   int size = 2048; // 1024; // Use 2048 with ATmega328
   byte *buf;
@@ -14,21 +14,63 @@ int availableMemory() {
   return size;
 }
 */
-void blinkLed(int n) { // Функція blinkLed блимає світлодіодом n раз.1
+
+const int ledPin = 13; // LED connected to digital pin 13.
+
+void blinkLed(int n) { // Функція blinkLed блимає світлодіодом n раз.
     for (int i = 0; i < n; i++) {
       if (i) delay(300); // На першому такті пауза не потрібна.
-      digitalWrite(13, HIGH);
+      digitalWrite(ledPin, HIGH);
       delay(300);
-      digitalWrite(13, LOW);
+      digitalWrite(ledPin, LOW);
     }
 }
 
-void setup() {
-  Serial.begin(9600); // Відкриваємо порт. 
-  blinkLed(1); // 1 раз блимаємо світлодіодом - повідомляємо що програма запустилась
+void notifyAboutCommand(const char* command) { // Повідомляє користувачу про отриману команду.
+  Serial.print("Received command: ");
+  Serial.print(command);
+  Serial.println();
 }
 
-void loop() {         
+inline void proccessCommand(const char* command) { // Обробляє команду.
+  if (!strcmp(command, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
+    notifyAboutCommand(command);
+
+    // Даємо імпульс 300 мс на вихід 1.
+    digitalWrite(1, HIGH);
+    delay(300);
+    digitalWrite(1, LOW);
+
+    blinkLed(1);
+    // Якщо отримали команду "turn off fountain 1".
+  } else if (!strcmp(command, "turn off fountain 1")) {
+    notifyAboutCommand(command);
+
+    // Даємо імпульс 300 мс на вихід 2.
+    digitalWrite(2, HIGH);
+    delay(300);
+    digitalWrite(2, LOW);
+
+    blinkLed(1);
+  } else { // Якщо команда невідома.
+    Serial.print("Unknown command: ");
+    Serial.print(command);
+    Serial.println();
+  }
+} // proccessCommand
+
+void setup() {
+  Serial.begin(9600); // Відкриваємо порт.
+
+  // Вибираємо режим роботи контактів як "вивід".
+  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+
+  blinkLed(2); // Блимаємо світлодіодом - повідомляємо що програма запустилась.
+}
+
+void loop() {
   int i = 0;
   char buffer[100];
   char c;
@@ -50,33 +92,15 @@ void loop() {
       if (i == 1) return; // Пусту стрічку пропускаємо.
       buffer[i - 1] = '\0';
     }
-                
-    // Показуємо отриману команду.
-    Serial.print("Received command: ");
-    Serial.print(buffer);
-    Serial.println();
-    
-    if (!strcmp(buffer, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
-      // Даємо імпульс 300 мс на вихід 1.
-      digitalWrite(1, HIGH);
-      delay(300);
-      digitalWrite(1, LOW);
-      
-    // Якщо отримали команду "turn off fountain 1".
-    } else if (!strcmp(buffer, "turn off fountain 1")) {
-      // Даємо імпульс 300 мс на вихід 2.
-      digitalWrite(2, HIGH);
-      delay(300);
-      digitalWrite(2, LOW);
-    }
 
-    /*    
+    proccessCommand(buffer);
+    /*
     c = buffer[0];
     if (c == 'b') { // якщо отримано команду b
       // якщо після b вказано пробіл то блимаємо світлодіодом визначеною кількостю раз.
       if (buffer[1] == ' ') blinkLed(atoi(&buffer[2]));
       else blinkLed(1); // інакше 1 раз блимаємо світлодіодом
- 
+
     } else if (c == 's') { // якщо отримано команду s
 
       // показуємо час роботи програми
@@ -119,4 +143,3 @@ void loop() {
   } // if (i)
 }
 // Sergiy Vovk. 2017.
-
