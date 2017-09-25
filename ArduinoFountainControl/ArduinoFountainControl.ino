@@ -1,21 +1,5 @@
+// Sergiy Vovk. 2017.
 #include <EEPROM.h>
-// int sensorPin = A0; // Input pin.
-// int sensorValue = 0; // Variable to store the value coming from the sensor.
-
-// void(* resetFunc) (void) = 0; // Declare reset function at address 0.
-/*
-// This function will return the number of bytes currently free in RAM.
-// Written by David A. Mellis.
-// Based on code by Rob Faludi http://www.faludi.com.
-int availableMemory() {
-  int size = 2048; // 1024; // Use 2048 with ATmega328
-  byte *buf;
-  while ((buf = (byte *) malloc(--size)) == NULL);
-  free(buf);
-  return size;
-}
-*/
-
 const int ledPin = 13; // LED connected to digital pin 13.
 
 void blinkLed(int n) { // Функція blinkLed блимає світлодіодом n раз.
@@ -36,16 +20,16 @@ void notifyAboutCommand(const char* command) { // Повідомляє кори�
 inline void proccessCommand(const char* command) { // Обробляє команду.
   if (!strcmp(command, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
     notifyAboutCommand(command);
-    digitalWrite(1, HIGH);
-    digitalWrite(ledPin, HIGH);
-    EEPROM.write(0, 1);
+    digitalWrite(1, HIGH); // Вмикаємо фонтан 1.
+    digitalWrite(ledPin, HIGH);; // Вимикаємо світлодіод.
+    EEPROM.write(0, 1); // Запамятовуємо стан фонтану.
 
-    // Якщо отримали команду "turn off fountain 1".
+  // Якщо отримали команду "turn off fountain 1".
   } else if (!strcmp(command, "turn off fountain 1")) {
     notifyAboutCommand(command);
-    digitalWrite(2, LOW);
-    digitalWrite(ledPin, LOW);
-    EEPROM.write(0, 0);
+    digitalWrite(1, LOW); // Вимикаємо фонтан 1.
+    digitalWrite(ledPin, LOW); // Вимикаємо світлодіод.
+    EEPROM.write(0, 0); // Запамятовуємо стан фонтану.
 
   } else if (!strcmp(command, "get state")) { // Якщо отримали команду "get state".
     if (EEPROM.read(0)) Serial.print("fountain 1: on");
@@ -76,10 +60,7 @@ void setup() {
 void loop() {
   int i = 0;
   char buffer[100];
-  char c;
-
-  // Якщо є дані, читаємо.
-  if (Serial.available()) {
+  if (Serial.available()) { // Якщо є дані, читаємо.
     delay(100);
 
     // Записуємо почитане в буфер.
@@ -96,53 +77,6 @@ void loop() {
       buffer[i - 1] = '\0';
     }
 
-    proccessCommand(buffer);
-    /*
-    c = buffer[0];
-    if (c == 'b') { // якщо отримано команду b
-      // якщо після b вказано пробіл то блимаємо світлодіодом визначеною кількостю раз.
-      if (buffer[1] == ' ') blinkLed(atoi(&buffer[2]));
-      else blinkLed(1); // інакше 1 раз блимаємо світлодіодом
-
-    } else if (c == 's') { // якщо отримано команду s
-
-      // показуємо час роботи програми
-      Serial.print("Run time: ");
-      Serial.print(millis() / 1000);
-      Serial.print(" seconds");
-      Serial.println();
-
-      // показуємо значення аналового входу 0
-      sensorValue = analogRead(A0);
-      Serial.print("Analog input 0 value: ");
-      Serial.print(sensorValue);
-      Serial.println();
-
-      // показуємо скільки вільно памяті
-      Serial.print("Free memory: ");
-      Serial.print(availableMemory());
-      Serial.print(" bytes");
-      Serial.println();
-
-    } else if (c == '1') digitalWrite(13, HIGH); // якщо отримано команду 1, вмикаємо світлодіод
-    else if (c == '0') digitalWrite(13, LOW); // якщо отримано команду 0, вимикаємо світлодіод
-    else if (c >= '2' && c <= '9') // якщо отримано команду 2 - 9
-      blinkLed(c - '0'); // блимаємо світлодіодом 2 - 9 раз відповідно команди 
-    else if (c == 'r') resetFunc(); // якщо отримано команду r, перезавантажуємо ардуїно
-
-    else if (c == 'h') { // якщо отримано команду h
-      Serial.println("Help");
-      Serial.println("b : blink the led 1 time");
-      Serial.println("b number : blink the led number times");
-      Serial.println("2 - 9 : blink the led number times");
-      Serial.println("1 : turn the led on");
-      Serial.println("0 : turn the led off");
-      Serial.println("s : show state");
-      Serial.println("r : reset arduino");
-      Serial.println("h : help");
-
-    } else Serial.println("Unknown command"); // Якщо команда невідома.
-    */
+    proccessCommand(buffer); // Обробляємо команду.
   } // if (i)
 }
-// Sergiy Vovk. 2017.
