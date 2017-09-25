@@ -21,7 +21,7 @@ inline void proccessCommand(const char* command) { // Обробляє кома�
   if (!strcmp(command, "turn on fountain 1")) { // Якщо отримали команду "turn on fountain 1".
     notifyAboutCommand(command);
     digitalWrite(1, HIGH); // Вмикаємо фонтан 1.
-    digitalWrite(ledPin, HIGH);; // Вимикаємо світлодіод.
+    digitalWrite(ledPin, HIGH); // Вмикаємо світлодіод.
     EEPROM.write(0, 1); // Запамятовуємо стан фонтану.
 
   // Якщо отримали команду "turn off fountain 1".
@@ -78,5 +78,5 @@ void loop() {
     }
 
     proccessCommand(buffer); // Обробляємо команду.
-  } // if (i)
+  }
 }
